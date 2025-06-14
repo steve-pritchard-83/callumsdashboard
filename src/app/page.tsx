@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Shop from "@/components/Shop";
+import News from "@/components/News";
+import Challenges from "@/components/Challenges";
+import BattlePass from "@/components/BattlePass";
 
 interface Stat {
   label: string;
@@ -76,6 +80,13 @@ export default function Home() {
         ) : (
           <p className="text-white text-center">No stats found.</p>
         )}
+
+        <div className="mt-8 w-full">
+            <Shop />
+            <News />
+            <Challenges />
+            <BattlePass />
+        </div>
       </div>
     </main>
   );

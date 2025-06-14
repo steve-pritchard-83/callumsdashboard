@@ -24,7 +24,8 @@ export default function Home() {
       try {
         const response = await fetch("/api/stats");
         if (!response.ok) {
-          throw new Error("Failed to fetch stats");
+           const errorData = await response.json().catch(() => ({ error: "Failed to fetch stats" }));
+           throw new Error(errorData.error || `Failed to fetch stats: ${response.statusText}`);
         }
         const data = await response.json();
         
@@ -38,7 +39,11 @@ export default function Home() {
         );
         setStats(relevantStats.map((stat: LifeTimeStat) => ({ label: stat.key, value: stat.value })));
       } catch (err: any) {
-        setError(err.message);
+        if (err.message.includes('fetch failed')) {
+          setError("Network error. Please check your connection or try again later.");
+        } else {
+          setError(err.message);
+        }
       } finally {
         setIsLoading(false);
       }

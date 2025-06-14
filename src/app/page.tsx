@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent, useCallback } from "react";
 import Shop from "@/components/Shop";
 import News from "@/components/News";
 import Challenges from "@/components/Challenges";
@@ -20,14 +20,14 @@ interface LifeTimeStat {
 export default function Home() {
   const [stats, setStats] = useState<Stat[]>([]);
   const [playerName, setPlayerName] = useState("");
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("jamsyfv"); // Default username
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start with loading true
 
-  const fetchStats = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!username) {
+  const fetchStatsByUsername = useCallback(async (name: string) => {
+    if (!name) {
       setError("Please enter a username.");
+      setIsLoading(false);
       return;
     }
     
@@ -37,7 +37,7 @@ export default function Home() {
     setPlayerName("");
 
     try {
-      const response = await fetch(`/api/stats?username=${username}`);
+      const response = await fetch(`/api/stats?username=${name}`);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: "Failed to fetch stats" }));
         throw new Error(errorData.error || `Failed to fetch stats: ${response.statusText}`);
@@ -61,6 +61,16 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
+  }, []); // useCallback to memoize the function
+
+  // Fetch stats for the default user on initial load
+  useEffect(() => {
+    fetchStatsByUsername(username);
+  }, [fetchStatsByUsername, username]);
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    fetchStatsByUsername(username);
   };
 
   return (
@@ -73,7 +83,7 @@ export default function Home() {
           Fortnite Stats Finder
         </h1>
         
-        <form onSubmit={fetchStats} className="flex justify-center items-center gap-2 mb-6">
+        <form onSubmit={handleSearch} className="flex justify-center items-center gap-2 mb-6">
           <input
             type="text"
             value={username}
@@ -104,7 +114,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <p className="text-white text-center">Enter a username to search for their stats.</p>
+          !isLoading && !error && <p className="text-white text-center">Enter a username to search for their stats.</p>
         )}
 
         <div className="mt-8 w-full">

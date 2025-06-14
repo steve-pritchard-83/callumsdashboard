@@ -10,9 +10,7 @@ interface NewsItem {
 }
 
 interface NewsData {
-  br: {
-    motds: NewsItem[];
-  };
+  news: NewsItem[];
 }
 
 export default function News() {
@@ -25,7 +23,6 @@ export default function News() {
         const res = await fetch("/api/news");
         if (!res.ok) throw new Error("Failed to fetch news");
         const data = await res.json();
-        console.log("News data received in component:", data);
         setNewsData(data);
       } catch (err: any) {
         setError(err.message);
@@ -38,9 +35,9 @@ export default function News() {
   return (
     <Accordion title="Game News">
       {error && <p className="text-red-500">{error}</p>}
-      {newsData && newsData.br && (
+      {newsData && newsData.news && (
         <div>
-          {newsData.br.motds.map((item, index) => (
+          {newsData.news.map((item, index) => (
             <div key={index} className="mb-4 text-white">
               <img src={item.image} alt={item.title} className="w-full" />
               <h3 className="text-xl font-bold mt-2">{item.title}</h3>

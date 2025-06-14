@@ -10,7 +10,9 @@ interface NewsItem {
 }
 
 interface NewsData {
-  motds: NewsItem[];
+  br: {
+    motds: NewsItem[];
+  };
 }
 
 export default function News() {
@@ -35,9 +37,9 @@ export default function News() {
   return (
     <Accordion title="Game News">
       {error && <p className="text-red-500">{error}</p>}
-      {newsData && (
+      {newsData && newsData.br && (
         <div>
-          {newsData.motds.map((item, index) => (
+          {newsData.br.motds.map((item, index) => (
             <div key={index} className="mb-4 text-white">
               <img src={item.image} alt={item.title} className="w-full" />
               <h3 className="text-xl font-bold mt-2">{item.title}</h3>

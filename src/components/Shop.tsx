@@ -45,7 +45,9 @@ export default function Shop() {
           {shopData.shop.length > 0 ? (
             shopData.shop.map((item) => (
               <div key={item.mainId} className="text-white">
-                <img src={item.displayAssets[0].url} alt={item.displayName} className="w-full" />
+                {item.displayAssets && item.displayAssets.length > 0 && (
+                  <img src={item.displayAssets[0].url} alt={item.displayName} className="w-full" />
+                )}
                 <p className="font-bold">{item.displayName}</p>
                 <p>{item.price.finalPrice} V-Bucks</p>
               </div>

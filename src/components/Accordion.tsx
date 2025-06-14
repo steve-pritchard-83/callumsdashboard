@@ -8,7 +8,7 @@ interface AccordionProps {
 }
 
 export default function Accordion({ title, children }: AccordionProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="border-t border-gray-600 w-full">

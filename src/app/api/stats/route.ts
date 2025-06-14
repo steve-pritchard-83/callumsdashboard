@@ -4,7 +4,7 @@ export async function GET() {
   const username = "jamsyfv"; // Should be from process.env.NEXT_PUBLIC_FORTNITE_USERNAME
 
   // IMPORTANT: Move this key to a .env.local file
-  const apiKey = "6ac7f721-5993a96d-eeb2797b-21b753b8";
+  const apiKey = process.env.FORTNITE_API_KEY;
 
   if (!apiKey) {
     return NextResponse.json(

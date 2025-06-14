@@ -25,6 +25,7 @@ export default function News() {
         const res = await fetch("/api/news");
         if (!res.ok) throw new Error("Failed to fetch news");
         const data = await res.json();
+        console.log("News data received in component:", data);
         setNewsData(data);
       } catch (err: any) {
         setError(err.message);

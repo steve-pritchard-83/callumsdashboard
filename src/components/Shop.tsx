@@ -4,11 +4,16 @@ import { useEffect, useState } from "react";
 import Accordion from "./Accordion";
 
 interface ShopItem {
-  id: string;
-  name: string;
-  price: number;
-  images: {
-    icon: string;
+  mainId: string;
+  displayName: string;
+  price: {
+    finalPrice: number;
+  };
+  displayAssets: {
+    url: string;
+  }[];
+  section: {
+    name: string;
   };
 }
 
@@ -27,7 +32,18 @@ export default function Shop() {
         const res = await fetch("/api/shop");
         if (!res.ok) throw new Error("Failed to fetch shop data");
         const data = await res.json();
-        setShopData(data);
+        console.log("Shop data received in component:", data);
+        if (data && data.shop) {
+          const dailyItems = data.shop.filter(
+            (item: ShopItem) => item.section && item.section.name === 'Daily'
+          );
+          const featuredItems = data.shop.filter(
+            (item: ShopItem) => item.section && item.section.name === 'Featured'
+          );
+          setShopData({ daily: dailyItems, featured: featuredItems });
+        } else {
+          setShopData({ daily: [], featured: [] });
+        }
       } catch (err: any) {
         setError(err.message);
       }
@@ -41,26 +57,30 @@ export default function Shop() {
       {error && <p className="text-red-500">{error}</p>}
       {shopData && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-2">Daily</h3>
-            {shopData.daily.map((item) => (
-              <div key={item.id} className="text-white">
-                <img src={item.images.icon} alt={item.name} className="w-24 h-24" />
-                <p>{item.name}</p>
-                <p>{item.price} V-Bucks</p>
-              </div>
-            ))}
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-white mb-2">Featured</h3>
-            {shopData.featured.map((item) => (
-              <div key={item.id} className="text-white">
-                <img src={item.images.icon} alt={item.name} className="w-24 h-24" />
-                <p>{item.name}</p>
-                <p>{item.price} V-Bucks</p>
-              </div>
-            ))}
-          </div>
+          {shopData.daily && shopData.daily.length > 0 ? (
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">Daily</h3>
+              {shopData.daily.map((item) => (
+                <div key={item.mainId} className="text-white">
+                  <img src={item.displayAssets[0].url} alt={item.displayName} className="w-24 h-24" />
+                  <p>{item.displayName}</p>
+                  <p>{item.price.finalPrice} V-Bucks</p>
+                </div>
+              ))}
+            </div>
+          ) : <p className="text-white">No daily items available.</p>}
+          {shopData.featured && shopData.featured.length > 0 ? (
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-2">Featured</h3>
+              {shopData.featured.map((item) => (
+                <div key={item.mainId} className="text-white">
+                  <img src={item.displayAssets[0].url} alt={item.displayName} className="w-24 h-24" />
+                  <p>{item.displayName}</p>
+                  <p>{item.price.finalPrice} V-Bucks</p>
+                </div>
+              ))}
+            </div>
+          ) : <p className="text-white">No featured items available.</p>}
         </div>
       )}
     </Accordion>

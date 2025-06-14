@@ -31,6 +31,7 @@ export default function Challenges() {
         const res = await fetch("/api/challenges");
         if (!res.ok) throw new Error("Failed to fetch challenges");
         const data = await res.json();
+        console.log("Challenges data received in component:", data);
         setChallengesData(data);
       } catch (err: any) {
         setError(err.message);

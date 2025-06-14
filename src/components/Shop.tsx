@@ -13,12 +13,8 @@ interface ShopItem {
 }
 
 interface ShopData {
-  daily: {
-    entries: ShopItem[];
-  };
-  featured: {
-    entries: ShopItem[];
-  };
+  daily: ShopItem[];
+  featured: ShopItem[];
 }
 
 export default function Shop() {
@@ -47,7 +43,7 @@ export default function Shop() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <h3 className="text-2xl font-bold text-white mb-2">Daily</h3>
-            {shopData.daily.entries.map((item) => (
+            {shopData.daily.map((item) => (
               <div key={item.id} className="text-white">
                 <img src={item.images.icon} alt={item.name} className="w-24 h-24" />
                 <p>{item.name}</p>
@@ -57,7 +53,7 @@ export default function Shop() {
           </div>
           <div>
             <h3 className="text-2xl font-bold text-white mb-2">Featured</h3>
-            {shopData.featured.entries.map((item) => (
+            {shopData.featured.map((item) => (
               <div key={item.id} className="text-white">
                 <img src={item.images.icon} alt={item.name} className="w-24 h-24" />
                 <p>{item.name}</p>

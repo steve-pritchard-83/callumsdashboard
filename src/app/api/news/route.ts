@@ -18,6 +18,7 @@ export async function GET() {
         headers: {
           Authorization: apiKey,
         },
+        cache: 'no-store'
       }
     );
 

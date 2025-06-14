@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-  const username = "jamsyfv"; // Should be from process.env.NEXT_PUBLIC_FORTNITE_USERNAME
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const username = searchParams.get('username');
+  
+  if (!username) {
+    return NextResponse.json({ error: "Username is required" }, { status: 400 });
+  }
 
   // IMPORTANT: Move this key to a .env.local file
   const apiKey = process.env.FORTNITE_API_KEY;
@@ -21,6 +26,7 @@ export async function GET() {
         headers: {
           Authorization: apiKey,
         },
+        cache: 'no-store'
       }
     );
 
@@ -48,6 +54,7 @@ export async function GET() {
         headers: {
           Authorization: apiKey,
         },
+        cache: 'no-store'
       }
     );
 

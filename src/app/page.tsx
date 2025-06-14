@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, FormEvent } from "react";
 import Shop from "@/components/Shop";
 import News from "@/components/News";
 import Challenges from "@/components/Challenges";
@@ -20,40 +20,48 @@ interface LifeTimeStat {
 export default function Home() {
   const [stats, setStats] = useState<Stat[]>([]);
   const [playerName, setPlayerName] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const response = await fetch("/api/stats");
-        if (!response.ok) {
-           const errorData = await response.json().catch(() => ({ error: "Failed to fetch stats" }));
-           throw new Error(errorData.error || `Failed to fetch stats: ${response.statusText}`);
-        }
-        const data = await response.json();
-        
-        if (data.error) {
-          throw new Error(data.error);
-        }
+  const fetchStats = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!username) {
+      setError("Please enter a username.");
+      return;
+    }
+    
+    setIsLoading(true);
+    setStats([]);
+    setError(null);
+    setPlayerName("");
 
-        const lifetimeStats: LifeTimeStat[] = data.lifeTimeStats;
-        const mappedStats: Stat[] = lifetimeStats.map((stat) => ({
-          label: stat.key,
-          value: stat.value,
-        }));
-
-        setPlayerName(data.epicUserHandle);
-        setStats(mappedStats);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
+    try {
+      const response = await fetch(`/api/stats?username=${username}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Failed to fetch stats" }));
+        throw new Error(errorData.error || `Failed to fetch stats: ${response.statusText}`);
       }
-    };
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
-    fetchStats();
-  }, []);
+      const lifetimeStats: LifeTimeStat[] = data.lifeTimeStats;
+      const mappedStats: Stat[] = lifetimeStats.map((stat) => ({
+        label: stat.key,
+        value: stat.value,
+      }));
+
+      setPlayerName(data.epicUserHandle);
+      setStats(mappedStats);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main
@@ -62,8 +70,26 @@ export default function Home() {
     >
       <div className="glassmorphism p-6 md:p-10 rounded-xl shadow-lg w-full max-w-4xl">
         <h1 className="text-4xl md:text-5xl font-bold text-white text-center mb-4">
-          {playerName ? `${playerName}'s Stats` : "Fortnite Stats"}
+          Fortnite Stats Finder
         </h1>
+        
+        <form onSubmit={fetchStats} className="flex justify-center items-center gap-2 mb-6">
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter Epic Games username"
+            className="p-2 rounded-md bg-white/20 text-white placeholder-gray-300 border-none focus:ring-2 focus:ring-white/50 w-full max-w-xs"
+          />
+          <button type="submit" disabled={isLoading} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md disabled:bg-gray-500">
+            {isLoading ? "..." : "Search"}
+          </button>
+        </form>
+
+        {playerName && (
+          <h2 className="text-3xl font-bold text-white text-center mb-4">{playerName}'s Stats</h2>
+        )}
+
         {isLoading ? (
           <p className="text-white text-center">Loading stats...</p>
         ) : error ? (
@@ -78,7 +104,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <p className="text-white text-center">No stats found.</p>
+          <p className="text-white text-center">Enter a username to search for their stats.</p>
         )}
 
         <div className="mt-8 w-full">

@@ -16,7 +16,7 @@ export async function GET() {
   try {
     // Step 1: Look up the account ID
     const lookupResponse = await fetch(
-      `https://fortniteapi.io/v1/lookup?username=${username}`,
+      `https://fortniteapi.io/v1/lookup?username=${username}&strict=false`,
       {
         headers: {
           Authorization: apiKey,

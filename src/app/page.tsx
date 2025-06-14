@@ -87,7 +87,7 @@ export default function Home() {
         </form>
 
         {playerName && (
-          <h2 className="text-3xl font-bold text-white text-center mb-4">{playerName}'s Stats</h2>
+          <h2 className="text-3xl font-bold text-white text-center mb-4">{playerName}&apos;s Stats</h2>
         )}
 
         {isLoading ? (
